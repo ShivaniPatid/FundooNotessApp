@@ -31,6 +31,8 @@ namespace FundooNotes
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSwaggerGen();
+
             services.AddDbContext<Context>(opts => opts.UseSqlServer(Configuration["ConnectionString:FundooNotess"]));
             services.AddControllers();
             services.AddTransient<IUserBL, UserBL>();
@@ -44,6 +46,12 @@ namespace FundooNotes
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Fundoo Notes App v1");
+            });
 
             app.UseHttpsRedirection();
 
