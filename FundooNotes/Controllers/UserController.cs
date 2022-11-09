@@ -24,7 +24,7 @@ namespace FundooNotes.Controllers
                 var result = this.userBL.Registration(userRegistration);
                 if (result != null)
                 {
-                    return this.Ok(new { success = true, message = "Registration succsessfull", data=result });
+                    return this.Ok(new { success = true, message = "Registration succsessfull", response=result });
                 }
                 else
                 {
@@ -38,5 +38,27 @@ namespace FundooNotes.Controllers
                 throw;
             }
         }
+
+        [HttpPost("Login")]
+        public IActionResult Login(UserLogin userLogin)
+        {
+            try
+            {
+                var result = this.userBL.Login(userLogin);
+                if (result == true)
+                {
+                    return this.Ok(new { success = true, message = "Login succsessfull"});
+                }
+                else
+                {
+                    return this.BadRequest(new { success = false, message = "Login Unsuccsessfull" });
+                }
+            }
+            catch (System.Exception)
+            {
+                throw;
+            }
+        }
     }
 }
+
