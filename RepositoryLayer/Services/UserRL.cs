@@ -25,7 +25,7 @@ namespace RepositoryLayer.Services
                 userEntity.FirstName = userRegistration.FirstName;
                 userEntity.LastName = userRegistration.LastName;
                 userEntity.Email = userRegistration.Email;
-                userEntity.Password = userRegistration.Password;
+                userEntity.Password = EncryptPassword(userRegistration.Password);
                 this.context.Users.Add(userEntity);
                 int result = this.context.SaveChanges();
                 if (result > 0)
@@ -43,8 +43,8 @@ namespace RepositoryLayer.Services
         public bool Login(UserLogin userLogin)
         {
             try
-            {
-                var userDetails = this.context.Users.Where(e => e.Email == userLogin.Email && e.Password == userLogin.Password).FirstOrDefault();
+            { 
+                var userDetails = this.context.Users.Where(e => e.Email == userLogin.Email && e.Password == EncryptPassword(userLogin.Password)).FirstOrDefault();
                 if (userDetails != null)
                 {
                     return true;
@@ -57,5 +57,33 @@ namespace RepositoryLayer.Services
             }
         }
 
+        
+        public static string EncryptPassword(string password)
+        {
+            try
+            {
+                byte[] encData_byte = new byte[password.Length];
+                encData_byte = System.Text.Encoding.UTF8.GetBytes(password);
+                string encData = Convert.ToBase64String(encData_byte);
+                return encData;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        
+        public static string DecryptPassword(string encData)
+        { 
+            System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
+            System.Text.Decoder decoder = encoding.GetDecoder();
+            byte[] decode_byte = Convert.FromBase64String(encData);
+            int charCount = decoder.GetCharCount(decode_byte, 0, decode_byte.Length);
+            char[] decoded_Char = new char[charCount];
+            decoder.GetChars(decode_byte, 0, decode_byte.Length, decoded_Char, 0);
+            string result = new string(decoded_Char);
+            return result; 
+        }
     }
 }
