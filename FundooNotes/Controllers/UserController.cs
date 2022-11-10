@@ -45,9 +45,9 @@ namespace FundooNotes.Controllers
             try
             {
                 var result = this.userBL.Login(userLogin);
-                if (result == true)
+                if (result != null)
                 {
-                    return this.Ok(new { success = true, message = "Login succsessfull"});
+                    return this.Ok(new { success = true, message = "Login succsessfull", data=result});
                 }
                 else
                 {
