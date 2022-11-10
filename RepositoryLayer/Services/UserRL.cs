@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using CommonLayer.Models;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using RepositoryLayer.AppContext;
 using RepositoryLayer.Entities;
 using RepositoryLayer.Interfaces;
@@ -12,9 +16,11 @@ namespace RepositoryLayer.Services
     public class UserRL : IUserRL
     {
         private readonly Context context;
-        public UserRL(Context context)
+        private readonly IConfiguration configuration;
+        public UserRL(Context context, IConfiguration configuration)
         {
             this.context = context;
+            this.configuration = configuration;
         }
 
         public UserEntity Registration(UserRegistration userRegistration)
@@ -40,16 +46,17 @@ namespace RepositoryLayer.Services
             }
         }
 
-        public bool Login(UserLogin userLogin)
+        public string Login(UserLogin userLogin)
         {
             try
             { 
                 var userDetails = this.context.Users.Where(e => e.Email == userLogin.Email && e.Password == EncryptPassword(userLogin.Password)).FirstOrDefault();
                 if (userDetails != null)
                 {
-                    return true;
+                    var result = GenerateJSONWebToken(userDetails.Email, userDetails.Id);
+                    return result;
                 }
-                return false;
+                return null;
             }
             catch (Exception)
             {
@@ -57,7 +64,25 @@ namespace RepositoryLayer.Services
             }
         }
 
-        
+        public string GenerateJSONWebToken(string email, long userId)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(this.configuration[("JWT:Key")]);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[]
+                {
+                   new Claim(ClaimTypes.Email, email),
+                   new Claim("userId", userId.ToString())
+                }),
+                Expires = DateTime.UtcNow.AddHours(1),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+        }
+
+
         public static string EncryptPassword(string password)
         {
             try
@@ -74,7 +99,7 @@ namespace RepositoryLayer.Services
         }
 
         
-        public static string DecryptPassword(string encData)
+        public  string DecryptPassword(string encData)
         { 
             System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
             System.Text.Decoder decoder = encoding.GetDecoder();
