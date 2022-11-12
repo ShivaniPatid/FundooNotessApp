@@ -73,7 +73,7 @@ namespace RepositoryLayer.Services
                 Subject = new ClaimsIdentity(new[]
                 {
                    new Claim(ClaimTypes.Email, email),
-                   new Claim("userId", userId.ToString())
+                   new Claim("Id", userId.ToString())
                 }),
                 Expires = DateTime.UtcNow.AddHours(1),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -82,6 +82,47 @@ namespace RepositoryLayer.Services
             return tokenHandler.WriteToken(token);
         }
 
+        public string ForgetPassword(string email)
+        {
+            try
+            {
+                var result = this.context.Users.Where(x => x.Email == email).FirstOrDefault();
+                if (result != null)
+                {
+                    var token = GenerateJSONWebToken(result.Email, result.Id);
+                    MSMQ msmq = new MSMQ();
+                    msmq.sendData2Queue(token);
+                    return token.ToString();
+                }
+                else
+                    return null;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public bool ResetPassword(string email, string password, string confirmPassword)
+        {
+            try
+            {
+                var result = this.context.Users.FirstOrDefault(x => x.Email == email);
+                if (password.Equals(confirmPassword) && result != null)
+                {
+                    result.Password = EncryptPassword(password);
+                    this.context.SaveChanges();
+                    return true;
+                }
+                else
+                    return false;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 
         public static string EncryptPassword(string password)
         {
