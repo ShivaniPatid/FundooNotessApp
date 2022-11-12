@@ -1,5 +1,7 @@
-﻿using BussinessLayer.Interfaces;
+﻿using System.Security.Claims;
+using BussinessLayer.Interfaces;
 using CommonLayer.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -52,6 +54,44 @@ namespace FundooNotes.Controllers
                 else
                 {
                     return this.BadRequest(new { success = false, message = "Login Unsuccsessfull" });
+                }
+            }
+            catch (System.Exception)
+            {
+                throw;
+            }
+        }
+
+        [HttpPost("ForgetPassword")]
+        public IActionResult ForgetPassword(string email)
+        {
+            var result = this.userBL.ForgetPassword(email);
+            if(result != null)
+            {
+                return this.Ok(new { success = true, message = "Email sent successfully" });
+            }
+            else
+            {
+                return this.BadRequest(new { success = false, message = "Email has not sent" });
+            }
+        }
+
+        [Authorize]
+        [HttpPost("ResetPassword")]
+        public IActionResult ResetPassword
+            (string password, string confirmPassword)
+        {
+            try
+            {
+                var email = User.FindFirst(ClaimTypes.Email).Value.ToString();
+                var result = this.userBL.ResetPassword(email, password, confirmPassword);
+                if(result != false)
+                {
+                    return this.Ok(new { success = true, message = "Your password has been reset" });
+                }
+                else
+                {
+                    return this.BadRequest(new { success = false, message = "Try again" });
                 }
             }
             catch (System.Exception)
