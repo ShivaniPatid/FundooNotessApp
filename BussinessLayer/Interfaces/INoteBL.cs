@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using CommonLayer.Models;
+using Microsoft.AspNetCore.Http;
 using RepositoryLayer.Entities;
 
 namespace BussinessLayer.Interfaces
@@ -15,6 +16,10 @@ namespace BussinessLayer.Interfaces
         public bool TrashNote(long userId, long noteId);
         public bool ArchiveNote(long userId, long noteId);
         public NoteEntity AddColor(long userId, long noteId, string color);
+        public IEnumerable<NoteEntity> GetNotesByUserId(long userId);
+        public IEnumerable<NoteEntity> GetAllNotes();
+        public NoteEntity UploadImage(long noteId, IFormFile image);
+
 
     }
 }

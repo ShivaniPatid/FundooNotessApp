@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using BussinessLayer.Interfaces;
 using CommonLayer.Models;
+using Microsoft.AspNetCore.Http;
 using RepositoryLayer.Entities;
 using RepositoryLayer.Interfaces;
 using RepositoryLayer.Services;
@@ -101,6 +102,41 @@ namespace BussinessLayer.Services
             }
         }
 
+        public IEnumerable<NoteEntity> GetNotesByUserId(long userId)
+        {
+            try
+            {
+                return noteRL.GetNotesByUserId(userId);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public IEnumerable<NoteEntity> GetAllNotes()
+        {
+            try
+            {
+                return noteRL.GetAllNotes();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public NoteEntity UploadImage(long noteId, IFormFile image)
+        {
+            try
+            {
+                return noteRL.UploadImage(noteId, image);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 
     }
 }

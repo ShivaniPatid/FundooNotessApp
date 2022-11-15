@@ -1,11 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
 using BussinessLayer.Interfaces;
 using CommonLayer.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
+using Newtonsoft.Json;
+using RepositoryLayer.Entities;
 
 namespace FundooNotes.Controllers
 {
@@ -18,6 +24,7 @@ namespace FundooNotes.Controllers
         public NoteController(INoteBL noteBL)
         {
             this.noteBL = noteBL;
+           
         }
 
         [HttpPost("Add")]
@@ -33,7 +40,7 @@ namespace FundooNotes.Controllers
                 }
                 else
                 {
-                    return this.Ok(new { success = false, message = "Something went wrong" });
+                    return this.BadRequest(new { success = false, message = "Something went wrong" });
                 }
             }
             catch (System.Exception)
@@ -56,7 +63,7 @@ namespace FundooNotes.Controllers
                 }
                 else
                 {
-                    return this.Ok(new { success = false, message = "Something went wrong" });
+                    return this.BadRequest(new { success = false, message = "Something went wrong" });
                 }
             }
             catch (Exception)
@@ -78,7 +85,7 @@ namespace FundooNotes.Controllers
                 }
                 else
                 {
-                    return this.Ok(new { success = false, message = "Something went wrong" });
+                    return this.BadRequest(new { success = false, message = "Something went wrong" });
                 }
             }
             catch (Exception)
@@ -100,7 +107,7 @@ namespace FundooNotes.Controllers
                 }
                 else
                 {
-                    return this.Ok(new { success = false, message = "Something went wrong" });
+                    return this.BadRequest(new { success = false, message = "Something went wrong" });
                 }
             }
             catch (Exception)
@@ -122,7 +129,7 @@ namespace FundooNotes.Controllers
                 }
                 else
                 {
-                    return this.Ok(new { success = false, message = "Something went wrong" });
+                    return this.BadRequest(new { success = false, message = "Something went wrong" });
                 }
             }
             catch (Exception)
@@ -144,7 +151,7 @@ namespace FundooNotes.Controllers
                 }
                 else
                 {
-                    return this.Ok(new { success = false, message = "Something went wrong" });
+                    return this.BadRequest(new { success = false, message = "Something went wrong" });
                 }
             }
             catch (Exception)
@@ -166,7 +173,7 @@ namespace FundooNotes.Controllers
                 }
                 else
                 {
-                    return this.Ok(new { success = false, message = "Something went wrong" });
+                    return this.BadRequest(new { success = false, message = "Something went wrong" });
                 }
             }
             catch (Exception)
@@ -175,5 +182,53 @@ namespace FundooNotes.Controllers
             }
         }
 
+        [HttpGet("ByUser")]
+        public IEnumerable<NoteEntity> GatNoteByUserId(long userId)
+        {
+            try
+            { 
+                 return noteBL.GetNotesByUserId(userId);
+                
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        [HttpGet("AllNotes")]
+        public IEnumerable<NoteEntity> GatAllNotes()
+        {
+            try
+            {
+                return noteBL.GetAllNotes();
+            }
+                
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        [HttpPut("UploadImage")]
+        public IActionResult UploadImage(long noteId, IFormFile image)
+        {
+            try
+            {
+                var result = noteBL.UploadImage(noteId, image);
+                if (result != null)
+                {
+                    return this.Ok(new { success = true, message = "Done", data = result });
+                }
+                else
+                {
+                    return this.BadRequest(new { success = false, message = "Something went wrong" });
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }
