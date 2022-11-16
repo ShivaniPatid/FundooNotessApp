@@ -240,7 +240,7 @@ namespace FundooNotes.Controllers
         }
 
         [HttpGet("RedisCache")]
-        public async Task<IActionResult> GetAllCustomersUsingRedisCache()
+        public async Task<IActionResult> GetAllNotesUsingRedisCache()
         {
             var cacheKey = "noteList";
             string serializednoteList;
@@ -254,7 +254,6 @@ namespace FundooNotes.Controllers
             else
             {
                 noteList = await context.Notes.ToListAsync();
-
                 //noteList = (List<NoteEntity>)noteBL.GetAllNotes();
                 serializednoteList = JsonConvert.SerializeObject(noteList);
                 redisnoteList = Encoding.UTF8.GetBytes(serializednoteList);
