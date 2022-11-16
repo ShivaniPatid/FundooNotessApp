@@ -207,6 +207,7 @@ namespace RepositoryLayer.Services
         {
             try
             {
+
                 var notes = this.context.Notes;
                 if (notes != null)
                 {
