@@ -4,6 +4,7 @@ using CommonLayer.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace FundooNotes.Controllers
 {
@@ -12,10 +13,11 @@ namespace FundooNotes.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserBL userBL;
-
-        public UserController(IUserBL userBL)
+        private readonly ILogger<UserController> logger;
+        public UserController(IUserBL userBL, ILogger<UserController> logger)
         {
             this.userBL = userBL;
+            this.logger = logger;
         }
 
         [HttpPost("Register")]
@@ -26,6 +28,7 @@ namespace FundooNotes.Controllers
                 var result = this.userBL.Registration(userRegistration);
                 if (result != null)
                 {
+                    logger.LogInformation("Registration is successfull");
                     return this.Ok(new { success = true, message = "Registration succsessfull", response=result });
                 }
                 else
