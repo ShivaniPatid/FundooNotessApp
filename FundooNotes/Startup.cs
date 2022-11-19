@@ -52,7 +52,15 @@ namespace FundooNotes
             {
                 options.Configuration = "localhost:6379";
             });
-            
+            services.AddCors(options =>
+            {
+                options.AddPolicy(
+                name: "AllowOrigin",
+              builder => {
+                  builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+              });
+            });
+
 
             services.AddSwaggerGen(c =>
             {
@@ -107,7 +115,7 @@ namespace FundooNotes
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            app.UseCors("AllowOrigin");
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
