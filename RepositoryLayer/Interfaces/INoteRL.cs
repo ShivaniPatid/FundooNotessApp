@@ -19,5 +19,6 @@ namespace RepositoryLayer.Interfaces
         public IEnumerable<NoteEntity> GetNotesByUserId(long userId);
         public IEnumerable<NoteEntity> GetAllNotes();
         public NoteEntity UploadImage(long noteId, IFormFile image);
+        public IEnumerable<NoteEntity> SearchNotes(string jobSearch);
     }
 }

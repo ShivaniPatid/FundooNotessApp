@@ -9,6 +9,7 @@ using CommonLayer.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
@@ -264,5 +265,19 @@ namespace FundooNotes.Controllers
             }
             return Ok(noteList);
         }
+
+        [HttpGet("Search")]
+        public IEnumerable<NoteEntity> SearchNotes(string search)
+        {
+            try
+            {
+                return noteBL.SearchNotes(search);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
     }
 }

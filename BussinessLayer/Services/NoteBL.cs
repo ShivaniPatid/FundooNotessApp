@@ -138,5 +138,17 @@ namespace BussinessLayer.Services
             }
         }
 
+        public IEnumerable<NoteEntity> SearchNotes(string jobSearch)
+        {
+            try
+            {
+                return noteRL.SearchNotes(jobSearch);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
     }
 }

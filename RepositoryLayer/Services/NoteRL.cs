@@ -258,6 +258,26 @@ namespace RepositoryLayer.Services
                 throw;
             }
         }
-       
+
+        public IEnumerable<NoteEntity> SearchNotes(string jobSearch)
+        {
+            try
+            {
+                var notes = context.Notes.Where(k => k.Title.Contains(jobSearch));
+                if (notes != null)
+                {
+                    return notes;
+                }
+                else
+                    return null;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+
     }
 }
